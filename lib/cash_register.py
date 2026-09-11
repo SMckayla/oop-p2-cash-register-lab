@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 class CashRegister:
     def __init__(self, discount=0):
         self._discount = 0
@@ -19,10 +17,11 @@ class CashRegister:
         else:
             print("Not valid discount")
 
-    def add_item(self, item, price, quantity):
+    def add_item(self, item, price, quantity=1):
         subtotal = price * quantity
         self.total += subtotal
-        self.items.append(item)
+        for _ in range(quantity):
+            self.items.append(item)
         self.previous_transactions.append({
             "item": item,
             "price": price,
@@ -37,6 +36,9 @@ class CashRegister:
         if self._discount > 0:
             discount_amount = self.total * (self._discount / 100)
             self.total -= discount_amount
+            print(f"Your updated total is {self.total}")
+        else:
+            print("There is no discount to apply.")
 
     def void_last_transaction(self):
         if not self.previous_transactions:
@@ -45,8 +47,9 @@ class CashRegister:
         
         last_transaction = self.previous_transactions.pop()
         
-        if last_transaction["item"] in self.items:
-            self.items.remove(last_transaction["item"])
-        
         subtotal = last_transaction["price"] * last_transaction["quantity"]
         self.total -= subtotal
+        
+        for _ in range(last_transaction["quantity"]):
+            if last_transaction["item"] in self.items:
+                self.items.remove(last_transaction["item"])
